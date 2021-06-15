@@ -1,0 +1,109 @@
+% ОБЩЕЕ
+\documentclass[a4paper,14pt]{extreport} % размер бумаги устанавливаем А4, шрифт 14пунктов
+\usepackage[T1,T2A]{fontenc}
+\usepackage[utf8x]{inputenc} % включаем свою кодировку: koi8-r или utf8 в UNIX, cp1251 в Windows
+\usepackage[english,russian]{babel} % используем русский и английский языки с переносами
+\usepackage{enumerate,float,indentfirst} % общий полезные пакеты
+
+% РАЗМЕТКА СТРАНИЦЫ
+\usepackage{geometry} % Меняем поля страницы
+\geometry{left=2cm} % левое поле
+\geometry{right=1.5cm} % правое поле
+\geometry{top=1cm} % верхнее поле
+\geometry{bottom=2cm} % нижнее поле
+
+% ЦИФРОВЫЕ ПОДПИСИ
+\renewcommand{\theenumi}{\arabic{enumi}} % Меняем везде перечисления на цифра.цифра
+\renewcommand{\labelenumi}{\arabic{enumi}} % Меняем везде перечисления на цифра.цифра
+\renewcommand{\theenumii}{.\arabic{enumii}} % Меняем везде перечисления на цифра.цифра
+\renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}.} % Меняем везде перечисления на цифра.цифра
+\renewcommand{\theenumiii}{.\arabic{enumiii}} % Меняем везде перечисления на цифра.цифра
+\renewcommand{\labelenumiii}{\arabic{enumi}.\arabic{_{}enumii}.\arabic{enumiii}.} % Меняем везде перечисления на цифра.цифра
+
+% РИСУНКИ
+\usepackage{graphicx} % хотим вставлять в диплом рисунки?
+\graphicspath{{images/}} % путь к рисункам
+% \usepackage[caption=false]{subfig}
+
+% СПИСОК ЛИТЕРАТУРЫ
+\usepackage[nottoc]{tocbibind} % включаем список литературы в оглавление
+\addto\captionsrussian{\renewcommand{\bibname}{Список литературы}} % выставляем правильный заголовок списка литературы
+\usepackage{cite} % пакет для цитирований из списка литературы
+\makeatletter
+%\renewcommand{\@biblabel}[1]{#1.} % Заменяем библиографию с квадратных скобок на точку:
+\makeatother
+
+% МАТЕМАТИЧЕСКИЕ ФОРМУЛЫ
+\usepackage{amssymb,amsfonts,amsmath,mathtext} % пакты для математики
+% Некоторые удобные операторы
+\newcommand{\sign}{\operatorname{sign}}
+\newcommand{\const}{\operatorname{const}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\renewcommand{\Re}{\operatorname{Re}}
+\renewcommand{\Im}{\operatorname{Im}}
+
+\usepackage{hyperref} % пакет для быстрых ссылок внутри документа
+\usepackage[all]{hypcap} % вспомогательный пакет для правильных ссылок на рисунки и прочее
+%TODO: PROP fix style issues: 
+% - fix labels for enumerate and subitems
+% - a system of highlighting keywords for different remarks / key formulas, etc
+% - redraw diagrams with e.g. Jaxodraw.
+% - adjust positions of fiures 
+% - spellchecking
+% - PROP make a more detailed system of autoreferences
+% - order of referencing in bibliography
+
+
+%% ПРИЛОЖЕНИЯ
+%\usepackage{appendix} % включаем оформление части с Приложениями
+%% команда от Игоря Побойки по настройке работы с приложениями;
+%% В основном правильно перенастраивает счетчики для работы ссылок
+%\makeatletter
+%\let\oriAlph\Alph
+%\let\orialph\alph
+%\renewcommand{\@resets@pp}{\par
+%	\@ppsavesec
+%	\stepcounter{@pps}
+%	\setcounter{section}{0}%
+%	\if@chapter@pp
+%	\setcounter{chapter}{0}%
+%	\renewcommand\@chapapp{\appendixname}%
+%	\renewcommand\thechapter{\@Alph\c@chapter}%
+%	\else
+%	\setcounter{subsection}{0}%
+%	\renewcommand\thesection{\@Alph\c@section}%
+%	\fi
+%	\if@pphyper
+%	\if@chapter@pp
+%	\renewcommand{\theHchapter}{\theH@pps.\oriAlph{chapter}}%
+%	\else
+%	\renewcommand{\theHsection}{\theH@pps.\oriAlph{section}}%
+%	\fi
+%	\def\Hy@chapapp{appendix}%
+%	\fi
+%	\restoreapp
+%}
+%\makeatother
+
+% СОДЕРЖАНИЕ ДОКУМЕНТА
+\begin{document}
+\input{Bachelor_thesis_title} % это титульный лист
+
+\tableofcontents % это оглавление, которое генерируется автоматически
+\newpage
+
+% содержание документа
+\input{Introduction_and_Motivation}
+\input{Theoretical_model}
+\input{Numerical_algorythm}
+\input{Results}
+\input{Conclusion}
+
+% список литературы
+\bibliographystyle{unsrt}
+\bibliography{Thesis_bibliography}
+
+% Приложения
+%\input{Appendix}
+
+\end{document}
