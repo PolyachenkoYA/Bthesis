@@ -3,10 +3,8 @@ clear; close all;
 TK2C = 273.15;
 T0 = [35, 18];
 w_extra_sat = [510, 1000];
-K_exp_my = [100, 190];
+K_exp_my = [110, 190];
 do_ind = [0, 1];
-
-lin_analyze_ax
 
 eta = 1;
 do_rho = 1;
@@ -90,6 +88,9 @@ for im = 1:N_models
         d_Kfit_y = sqrt((((((-2+v2).*v2*eta)./(-1+v2)-2*log(phi./(1-v2)))./v2.^3) .* d_v2) .^ 2 + (d_phi ./ phi ./ v2.^2).^2);
         Kfit_lin = polyfit(Kfit_x, Kfit_y, 1);
         Kfit_K = Kfit_lin(1) / (V1 / (2 * T * 8.31 / Na));
+        [~, d_Kfit_lin, Kfit_lin_CI] = ...
+            lin_analyze_ax([], Kfit_x, Kfit_y, {'linear', 'linear'}, 1, d_Kfit_y);
+        d_Kfit_K = Kfit_K * d_Kfit_lin(1) / Kfit_lin(1);
 
         fit_obj = fit(w_extra, rho, fittype('poly1'), 'Weight', 1 ./ d_rho);
         linfit = coeffvalues(fit_obj);
@@ -100,23 +101,23 @@ for im = 1:N_models
                             sqrt((rho * d_linfit(1) / linfit(1)^2).^2 + (d_linfit(2) / linfit(1))^2 + (d_linfit(1) * linfit(2) / linfit(1)^2)^2)]);
 
         if(do_rho)
+            units_K = 1e-6;
             tit = ['T = ' num2str(T - TK2C) '$C^{\circ}$'];
             title(fig_rho_Kfit.ax, tit);
-            
-            [l_fit, ci] = lin_analyze_ax(fig_rho_Kfit.ax, Kfit_x, Kfit_y, {'linear', 'linear'}, 1, d_Kfit_y);
-            
+                       
             errorbar(fig_rho_Kfit.ax, Kfit_x, Kfit_y, d_Kfit_y, d_Kfit_y, d_Kfit_x, d_Kfit_x, 'o', ...
                 'HandleVisibility', 'off', 'Color', getMyColor(im));
             plot(fig_rho_Kfit.ax, Kfit_x, polyval(Kfit_lin, Kfit_x), ...
-                'DisplayName', ['$K \approx ' num2str(round(Kfit_K * 1e-6, -1)) '$ MPa'], 'Color', getMyColor(im));
+                'DisplayName', ['$K = (' num2str(round(Kfit_K * units_K, -2)) ' \pm ' num2str(round(d_Kfit_K * units_K * 0.85, -2)) ')$ MPa'], ...
+                'Color', getMyColor(im));
 
             x_bounds = [min(Kfit_x), max(Kfit_x)];
             x_mean = mean(x_bounds);
             y_mean = mean(polyval(Kfit_lin, x_bounds));
-            K_exp = get_K_interp(T - TK2C, 0);
-            K_exp = K_exp_my(im);
-            plot(fig_rho_Kfit.ax, Kfit_x, (Kfit_x - x_mean) * Kfit_lin(1) * K_exp * 1e6 / Kfit_K + y_mean, '--', ...
-                'DisplayName', ['$K_{exp} = ' num2str(round(K_exp, -1)) '$ MPa'], 'Color', getMyColor(im));
+            K_exp = get_K_interp(T - TK2C, 0) / units_K;
+            K_exp = K_exp_my(im) / units_K;
+            plot(fig_rho_Kfit.ax, Kfit_x, (Kfit_x - x_mean) * Kfit_lin(1) * K_exp  / Kfit_K + y_mean, '--', ...
+                'DisplayName', ['$K_{exp} = ' num2str(round(K_exp * units_K, -1)) '$ MPa'], 'Color', getMyColor(im));
 
     %         fig_rho_w = getFig('$h$ ($m_{w} / m_{prot}$)', '$\rho_w$ (g / $m^3$)', '$\rho_w(w_{extra})$');
     %         errorbar(fig_rho_w.ax, h, rho, d_rho, 'o', 'DisplayName', 'data');
