@@ -20,12 +20,10 @@ T_b = 20;
 T = Gorelov_data(:, 1) - TC2K;
 K = Gorelov_data(:, 2);
 
-fig = getFig('$T$ ($C^{\circ}$)', '$K$ (MPa)', '$K(T)$', '', 'log');
+fig = getFig('$T$ $C^{\circ}$', '$K$ MPa', 'K(T)', '', 'log');
 
 fit1 = draw_exp(fig.ax, T, K, T < T_b, '+', 'exp 1', getMyColor(1));
 fit2 = draw_exp(fig.ax, T, K, T >= T_b, 'o', 'exp 2', getMyColor(2));
-
-disp(get_K_interp(35, T_b, fit1, fit2));
 
 function logfit = draw_exp(ax, T_all, K_all, ind, marker, tit, clr)
     T = T_all(ind);
@@ -39,9 +37,8 @@ function logfit = draw_exp(ax, T_all, K_all, ind, marker, tit, clr)
 end
 
 function K = get_K_interp(T, T_b, fit1, fit2)
-    if(T < T_b)
-        K = exp(polyval(fit1, T));
+    if(T > T_b)
+        
     else
-        K = exp(polyval(fit2, T));
     end
 end
