@@ -1,10 +1,10 @@
 clear; close all;
 
 TK2C = 273.15;
-T0 = [35, 18];
-w_extra_sat = [510, 1000];
-K_exp_my = [110, 190];
-do_ind = [0, 1];
+T0 = [35, 26, 18, 10, 2];
+w_extra_sat = [510, 1000, 1000, 1000, 1000];
+K_exp_my = [110, 164, 190, 300, 1290];
+do_ind = [0, 1, 1, 1, 1];
 
 eta = 1;
 do_rho = 1;
@@ -13,19 +13,28 @@ do_L = 0;
 %w_extra = [-40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110]' + w_extra0;
 %w_extra = [-500,  -420,  -330,  -250,  -160,   -80,   180,   260,   350,   440,   520,   610]' + w_extra0;
 w_extra_data = {[(0:50:450)'; ([-500,  -420,  -330,  -250,  -160,   -80,   180,   260,   350,   440,   520,   610, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110]' + (1014 - 180))], ...
-            [(0:150:450), 650, 800]'};
+                [0, 150, 300, 450, 600, 750]', ...
+                [(0:150:450), 650, 800]', ...
+                [0, 150, 300, 450, 600, 750]', ...
+                [0, 300, 600, 750]'};
 
 %rho = [6.96, 6.36, 5.81, 7.27, 6.00, 7.70, 7.0, 8.0, 7.0, 7.86, 10, 7.3, 7.33, 8.0, 7.66, 8.43]';
 %rho = [6.5, 9, 8, 6.1, 7, 10, 8, 7.85, 7, 8.5, 7.9, 8]';
 %rho = [5.76, 5.91, 6.77, 6.66, 7.38, 6.65, 6.4, 7.06, 7.17, 7.78]';
 rho_data = {[5.76, 5.91, 6.77, 6.66, 7.38, 6.65, 6.4, 7.06, 7.17, 7.78, 6.5, 9, 8, 6.1, 7, 10, 8, 7.85, 7, 8.5, 7.9, 8, 6.96, 6.36, 5.81, 7.27, 6.00, 7.70, 7.0, 8.0, 7.0, 7.86, 10, 7.3, 7.33, 8.0, 7.66, 8.43]', ...
-       [1.55, 1.89, 2.08, 2.16, 2.58, 2.58]'};
+            [3.35, 3.53, 3.58, 3.86, 4.11, 3.86]', ...
+            [1.55, 1.89, 2.08, 2.16, 2.58, 2.58]', ... % 2.58
+            [0.74, 0.96, 1.15, 1.09, 1.32, 1.18]', ...
+            [0.422, 0.48, 0.57, 0.567]'};
 
 %d_rho = [0.456, 0.348, 0.144, 0.800, 1.0, 1.0, 0.1, 1.5, 1.5, 1.18, 3.5, 1.5, 0.942, 0.4, 1.0, 0.182]';
 %d_rho = [0.6, 1, 2, 0.3, 1, 3, 2, 0.5, 1, 1.5, 0.6, 2]';
 %d_rho = [0.06, 0.06, 0.07, 0.065, 0.07, 0.07, 0.06, 0.07, 0.07, 0.07]';
 d_rho_data = {[0.6, 1, 1, 1.2, 0.8, 0.7, 0.56, 1, 2, 1.5, 0.6, 1, 2, 0.3, 1, 3, 2, 0.5, 1, 1.5, 0.6, 2, 0.456, 0.348, 0.144, 0.800, 1.0, 1.0, 0.1, 1.5, 1.5, 1.18, 3.5, 1.5, 0.942, 0.4, 1.0, 0.182]', ...
-         [0.03, 0.03, 0.03, 0.03, 0.05, 0.05]'};
+              [0.08, 0.083, 0.084, 0.087, 0.092, 0.091]', ...
+              [0.03, 0.03, 0.03, 0.03, 0.05, 0.05]', ...
+              [0.022, 0.025, 0.028, 0.028, 0.031, 0.035]', ...
+              [0.018, 0.02, 0.03, 0.03]'};
 %d_rho = ones(size(rho)) * 0.4;
 
 if(do_rho)
@@ -40,7 +49,7 @@ N_models = length(T0);
 for im = 1:N_models
     if(do_ind(im))
         T = T0(im) + TK2C;
-        rho_sat = get_rho_sat(get_opt_rho_sat([]), T);
+        rho_sat = get_rho_sat(get_opt_rho_sat([]), T) / 1.5;
         %rho_sat = 2.6;    
         not_sat_ind = w_extra_data{im} < w_extra_sat(im);
         w_extra = w_extra_data{im}(not_sat_ind);
@@ -102,14 +111,15 @@ for im = 1:N_models
 
         if(do_rho)
             units_K = 1e-6;
-            tit = ['T = ' num2str(T - TK2C) '$C^{\circ}$'];
-            title(fig_rho_Kfit.ax, tit);
+            clr = getMyColor(im+2);
+            %tit = ['T = ' num2str(T - TK2C) '$C^{\circ}$'];
+            %title(fig_rho_Kfit.ax, tit);
                        
             errorbar(fig_rho_Kfit.ax, Kfit_x, Kfit_y, d_Kfit_y, d_Kfit_y, d_Kfit_x, d_Kfit_x, 'o', ...
-                'HandleVisibility', 'off', 'Color', getMyColor(im));
-            plot(fig_rho_Kfit.ax, Kfit_x, polyval(Kfit_lin, Kfit_x), ...
-                'DisplayName', ['$K = (' num2str(round(Kfit_K * units_K, -2)) ' \pm ' num2str(round(d_Kfit_K * units_K * 0.85, -2)) ')$ MPa'], ...
-                'Color', getMyColor(im));
+                'HandleVisibility', 'off', 'Color', clr, 'LineWidth', 1.5);
+%             plot(fig_rho_Kfit.ax, Kfit_x, polyval(Kfit_lin, Kfit_x), ...
+%                 'DisplayName', ['$K = (' num2str(round(Kfit_K * units_K, -2)) ' \pm ' num2str(round(d_Kfit_K * units_K * 0.85, -2)) ')$ MPa'], ...
+%                 'Color', clr, 'LineWidth', 1.5);
 
             x_bounds = [min(Kfit_x), max(Kfit_x)];
             x_mean = mean(x_bounds);
@@ -117,7 +127,8 @@ for im = 1:N_models
             K_exp = get_K_interp(T - TK2C, 0) / units_K;
             K_exp = K_exp_my(im) / units_K;
             plot(fig_rho_Kfit.ax, Kfit_x, (Kfit_x - x_mean) * Kfit_lin(1) * K_exp  / Kfit_K + y_mean, '--', ...
-                'DisplayName', ['$K_{exp} = ' num2str(round(K_exp * units_K, -1)) '$ MPa'], 'Color', getMyColor(im));
+                'DisplayName', ['$T = ' num2str(T - TK2C) ' (C^{\circ}); K_{exp} = ' num2str(round(K_exp * units_K, -1)) '$ MPa'], ...
+                'Color', clr, 'LineWidth', 1.5);
 
     %         fig_rho_w = getFig('$h$ ($m_{w} / m_{prot}$)', '$\rho_w$ (g / $m^3$)', '$\rho_w(w_{extra})$');
     %         errorbar(fig_rho_w.ax, h, rho, d_rho, 'o', 'DisplayName', 'data');

@@ -23,18 +23,27 @@ d_K_f = 207;
 d_K_dV = 134;
 
 to_draw_exp = 1;
+to_draw_comp = 0;
+scl = 'linear';
+full_scale = 0;
 
-getFig('$T$ ($C^{\circ}$)', '$K$ (MPa)', '$K(T)$', '', 'log');
+fig = getFig('$T$ ($C^{\circ}$)', '$K$ (MPa)', '$K(T)$', '', scl);
 
-errorbar(T, K_dV, ones(size(K_dV)) * d_K_dV, 'o', ...
-         'DisplayName', '$dV/V \sim 10^{-2.5}$', 'LineWidth', 1.5);
-errorbar(T, K_f, ones(size(K_f)) * d_K_f, 'o', ...
-         'DisplayName', 'flucts', 'LineWidth', 1.5);
+if(to_draw_comp)
+    errorbar(fig.ax, T, K_dV, ones(size(K_dV)) * d_K_dV, 'o', ...
+             'DisplayName', '$dV/V \sim 10^{-2.5}$', 'LineWidth', 1.5, 'Color', getMyColor(5));
+    errorbar(fig.ax, T, K_f, ones(size(K_f)) * d_K_f, 'o', ...
+             'DisplayName', 'flucts', 'LineWidth', 1.5, 'Color', getMyColor(4));
+end
      
 if(to_draw_exp)
-    plot(K_exp1(:, 1) - TC2K, K_exp1(:, 2), '+', ...
-         'DisplayName', 'exp 1', 'Color', getMyColor(4), 'LineWidth', 1.5);
-    plot(K_exp2(:, 1) - TC2K, K_exp2(:, 2), 'o', ...
-         'DisplayName', 'exp 2', 'Color', getMyColor(4), 'LineWidth', 1.5);
+    plot(fig.ax, K_exp1(:, 1) - TC2K, K_exp1(:, 2), 's', ...
+         'DisplayName', 'exp 1', 'Color', 'blue', 'LineWidth', 1.5, 'MarkerSize', 10);
+    plot(fig.ax, K_exp2(:, 1) - TC2K, K_exp2(:, 2), 'o', ...
+         'DisplayName', 'exp 2', 'Color', 'red', 'LineWidth', 1.5, 'MarkerSize', 10);
 end
 
+if(full_scale)
+    natural_ylims = get(fig.ax,'YLim');
+    ylim(fig.ax, [0, natural_ylims(2)]);
+end
